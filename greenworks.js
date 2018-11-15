@@ -4,6 +4,7 @@
 
 // The source code can be found in https://github.com/greenheartgames/greenworks
 var fs = require('fs');
+var path = require('path');
 
 var greenworks;
 
@@ -30,7 +31,7 @@ function error_process(err, error_callback) {
 }
 
 greenworks.ugcGetItems = function(options, ugc_matching_type, ugc_query_type,
-    success_callback, error_callback) {
+                                  success_callback, error_callback) {
   if (typeof options !== 'object') {
     error_callback = success_callback;
     success_callback = ugc_query_type;
@@ -42,11 +43,11 @@ greenworks.ugcGetItems = function(options, ugc_matching_type, ugc_query_type,
     }
   }
   greenworks._ugcGetItems(options, ugc_matching_type, ugc_query_type,
-      success_callback, error_callback);
+    success_callback, error_callback);
 }
 
 greenworks.ugcGetUserItems = function(options, ugc_matching_type,
-    ugc_list_sort_order, ugc_list, success_callback, error_callback) {
+                                      ugc_list_sort_order, ugc_list, success_callback, error_callback) {
   if (typeof options !== 'object') {
     error_callback = success_callback;
     success_callback = ugc_list;
@@ -59,11 +60,11 @@ greenworks.ugcGetUserItems = function(options, ugc_matching_type,
     }
   }
   greenworks._ugcGetUserItems(options, ugc_matching_type, ugc_list_sort_order,
-      ugc_list, success_callback, error_callback);
+    ugc_list, success_callback, error_callback);
 }
 
 greenworks.ugcSynchronizeItems = function (options, sync_dir, success_callback,
-    error_callback) {
+                                           error_callback) {
   if (typeof options !== 'object') {
     error_callback = success_callback;
     success_callback = sync_dir;
@@ -74,11 +75,11 @@ greenworks.ugcSynchronizeItems = function (options, sync_dir, success_callback,
     }
   }
   greenworks._ugcSynchronizeItems(options, sync_dir, success_callback,
-      error_callback);
+    error_callback);
 }
 
 greenworks.publishWorkshopFile = function(options, file_path, image_path, title,
-    description, success_callback, error_callback) {
+                                          description, success_callback, error_callback) {
   if (typeof options !== 'object') {
     error_callback = success_callback;
     success_callback = description;
@@ -92,12 +93,12 @@ greenworks.publishWorkshopFile = function(options, file_path, image_path, title,
     }
   }
   greenworks._publishWorkshopFile(options, file_path, image_path, title,
-      description, success_callback, error_callback);
+    description, success_callback, error_callback);
 }
 
 greenworks.updatePublishedWorkshopFile = function(options,
-    published_file_handle, file_path, image_path, title, description,
-    success_callback, error_callback) {
+                                                  published_file_handle, file_path, image_path, title, description,
+                                                  success_callback, error_callback) {
   if (typeof options !== 'object') {
     error_callback = success_callback;
     success_callback = description;
@@ -111,14 +112,14 @@ greenworks.updatePublishedWorkshopFile = function(options,
     }
   }
   greenworks._updatePublishedWorkshopFile(options, published_file_handle,
-     file_path, image_path, title, description, success_callback,
-     error_callback);
+    file_path, image_path, title, description, success_callback,
+    error_callback);
 }
 
 // An utility function for publish related APIs.
 // It processes remains steps after saving files to Steam Cloud.
 function file_share_process(file_name, image_name, next_process_func,
-    error_callback, progress_callback) {
+                            error_callback, progress_callback) {
   if (progress_callback)
     progress_callback("Completed on saving files on Steam Cloud.");
   greenworks.fileShare(file_name, function() {
@@ -133,17 +134,17 @@ function file_share_process(file_name, image_name, next_process_func,
 // 2. Share the file and image.
 // 3. publish the file to workshop.
 greenworks.ugcPublish = function(file_name, title, description, image_name,
-    success_callback, error_callback, progress_callback) {
+                                 success_callback, error_callback, progress_callback) {
   var publish_file_process = function() {
     if (progress_callback)
       progress_callback("Completed on sharing files.");
     greenworks.publishWorkshopFile(file_name, image_name, title, description,
-        function(publish_file_id) { success_callback(publish_file_id); },
-        function(err) { error_process(err, error_callback); });
+      function(publish_file_id) { success_callback(publish_file_id); },
+      function(err) { error_process(err, error_callback); });
   };
   greenworks.saveFilesToCloud([file_name, image_name], function() {
     file_share_process(file_name, image_name, publish_file_process,
-        error_callback, progress_callback);
+      error_callback, progress_callback);
   }, function(err) { error_process(err, error_callback); });
 }
 
@@ -152,26 +153,26 @@ greenworks.ugcPublish = function(file_name, title, description, image_name,
 // 2. Share file and images.
 // 3. Update published file.
 greenworks.ugcPublishUpdate = function(published_file_id, file_name, title,
-    description, image_name, success_callback, error_callback,
-    progress_callback) {
+                                       description, image_name, success_callback, error_callback,
+                                       progress_callback) {
   var update_published_file_process = function() {
     if (progress_callback)
       progress_callback("Completed on sharing files.");
     greenworks.updatePublishedWorkshopFile(published_file_id,
-        file_name, image_name, title, description,
-        function() { success_callback(); },
-        function(err) { error_process(err, error_callback); });
+      file_name, image_name, title, description,
+      function() { success_callback(); },
+      function(err) { error_process(err, error_callback); });
   };
 
   greenworks.saveFilesToCloud([file_name, image_name], function() {
     file_share_process(file_name, image_name, update_published_file_process,
-        error_callback, progress_callback);
+      error_callback, progress_callback);
   }, function(err) { error_process(err, error_callback); });
 }
 
 // Greenworks Utils APIs implmentation.
 greenworks.Utils.move = function(source_dir, target_dir, success_callback,
-    error_callback) {
+                                 error_callback) {
   fs.rename(source_dir, target_dir, function(err) {
     if (err) {
       if (error_callback) error_callback(err);
@@ -188,20 +189,20 @@ greenworks.init = function() {
     throw new Error("Steam initialization failed. Steam is not running.");
   var appId;
   try {
-    appId = fs.readFileSync('steam_appid.txt', 'utf8');
+    appId = fs.readFileSync(path.join(__dirname, 'steam_appid.txt'), 'utf8');
   } catch (e) {
     throw new Error("Steam initialization failed. Steam is running," +
-                    "but steam_appid.txt is missing. Expected to find it in: " +
-                    require('path').resolve('steam_appid.txt'));
+      "but steam_appid.txt is missing. Expected to find it in: " +
+      path.join(__dirname, 'steam_appid.txt'));
   }
   if (!/^\d+ *\r?\n?$/.test(appId)) {
     throw new Error("Steam initialization failed. " +
-                    "steam_appid.txt appears to be invalid; " +
-                    "it should contain a numeric ID: " + appId);
+      "steam_appid.txt appears to be invalid; " +
+      "it should contain a numeric ID: " + appId);
   }
   throw new Error("Steam initialization failed, but Steam is running, " +
-                  "and steam_appid.txt is present and valid." +
-                  "Maybe that's not really YOUR app ID? " + appId.trim());
+    "and steam_appid.txt is present and valid." +
+    "Maybe that's not really YOUR app ID? " + appId.trim());
 }
 
 var EventEmitter = require('events').EventEmitter;
