@@ -189,11 +189,11 @@ greenworks.init = function() {
     throw new Error("Steam initialization failed. Steam is not running.");
   var appId;
   try {
-    appId = fs.readFileSync(path.join(__dirname, 'steam_appid.txt'), 'utf8');
+    appId = fs.readFileSync('steam_appid.txt', 'utf8');
   } catch (e) {
     throw new Error("Steam initialization failed. Steam is running," +
       "but steam_appid.txt is missing. Expected to find it in: " +
-      path.join(__dirname, 'steam_appid.txt'));
+      require('path').resolve('steam_appid.txt'));
   }
   if (!/^\d+ *\r?\n?$/.test(appId)) {
     throw new Error("Steam initialization failed. " +
